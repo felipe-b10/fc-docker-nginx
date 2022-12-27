@@ -1,0 +1,11 @@
+FROM nginx
+
+COPY ./wait-for-it.sh ./
+COPY ./nginx/app.conf /etc/nginx/conf.d/
+
+RUN chmod +x wait-for-it.sh
+
+ENTRYPOINT [ "/bin/bash", "-c" ]
+CMD ["./wait-for-it.sh app:3000 --strict --timeout=300 -- /docker-entrypoint.sh && nginx -g 'daemon off;'"]
+
+EXPOSE 8080

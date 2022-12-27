@@ -1,0 +1,12 @@
+FROM node
+
+WORKDIR /usr/src/app
+
+COPY ./wait-for-it.sh ./node/index.js ./node/package.json ./node/package-lock.json ./
+
+RUN chmod +x wait-for-it.sh
+
+ENTRYPOINT [ "/bin/bash", "-c" ]
+CMD ["./wait-for-it.sh db:3306 --strict --timeout=300 -- npm install && npm start"]
+
+EXPOSE 3000

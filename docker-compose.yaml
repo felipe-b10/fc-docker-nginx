@@ -1,0 +1,49 @@
+version: '3.2'
+
+services:
+  db:
+    image: mysql:5.7
+    container_name: db
+    command: --innodb-use-native-aio=0
+    restart: always
+    tty: true
+    volumes:
+      - fcdockervolume:/var/lib/mysql
+    environment:
+      - MYSQL_DATABASE=fullcycle
+      - MYSQL_ROOT_PASSWORD=root
+    networks:
+      - fc-docker-nginx
+
+  app:
+    build:
+      context: ./
+      dockerfile: Dockerfile.node
+    container_name: app
+    tty: true
+    networks:
+      - fc-docker-nginx
+    depends_on:
+      - db
+    ports:
+      - 3000:3000
+    
+  nginx:
+    build:
+      context: ./
+      dockerfile: Dockerfile.nginx
+    container_name: nginx
+    tty: true
+    networks:
+      - fc-docker-nginx
+    depends_on:
+      - app
+    ports:
+      - 8080:8080
+
+networks:
+  fc-docker-nginx:
+    driver: bridge
+
+volumes:
+  fcdockervolume:
